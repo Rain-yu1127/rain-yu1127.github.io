@@ -267,6 +267,26 @@
             margin-bottom: 20px;
             color: #ddd;
         }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -341,9 +361,11 @@
         </div>
 
         <footer>
-            <p>© 2025 怜遇网盘 | 备案号：114514
+            <p>© 2025 怜遇网盘 | 静态网站版本</p>
         </footer>
     </div>
+
+    <div class="notification" id="notification">文件下载已开始...</div>
 
     <script>
         // 示例文件数据
@@ -354,6 +376,20 @@
             { id: 4, name: '项目备份.zip', type: 'zip', size: '15.2 MB', date: '2023-10-05' },
             { id: 5, name: '用户手册.pdf', type: 'pdf', size: '3.1 MB', date: '2023-09-28' }
         ];
+
+        // 下载链接
+        const downloadUrl = "https://developer-oss.lanrar.com/file/?AmRWaF5vU2IACQU9AzYHawY5AjpSIAAsBXYEegEpWn1QNlpkCDkAMQYPBDsDM1RoUztQYABnVGICNAAzAmxSZwI1VideZVN0AGsFZANuByAGLAJ3UjAAMAUyBDABaFp0UGFaPQh6AGUGaQR9AzZUMVMxUGwAPlRnAmAAZwI6UmUCMFZiXjFTNQBkBWMDbwc1BjgCNVJvADQFZgRhAWlabVAyWj4IZgBmBmIEMwN5VCFTcVAhAHlUIwJ2AGMCLFI6AmZWPF4wUzQAZwVrA2cHNQZoAiFSeQBrBW8EZwE7WmZQYVo6CGMAZQZpBGMDZlRjUzBQZgBxVHgCIwBgAjJSJAI/VjBeNFMxAGYFawNhBzYGZQIyUjUAJAV3BHIBKlpmUGFaOghjAGQGaARkA2dUbFM5UGcAeVQjAmwAdgJjUmECMFYyXi1TNgBjBWMDeQc0BnICNVI4ADcFLAQkATlaNFAnWmMICgA3BjsEbwNnVHtTL1AhACZUJgJgAFkCK1IyAj9WMQ==&toolsdown";
+
+        // 显示通知
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
 
         // 渲染文件列表
         function renderFileList() {
@@ -393,7 +429,12 @@
         // 下载文件函数
         function downloadFile(fileId) {
             const file = files.find(f => f.id === fileId);
-            alert(`开始下载: ${file.name}\n\n注意：这是一个静态演示，实际功能需要后端支持。`);
+            showNotification(`开始下载: ${file.name}`);
+            
+            // 跳转到指定的下载链接
+            setTimeout(() => {
+                window.location.href = downloadUrl;
+            }, 1000);
         }
 
         // 删除文件函数
@@ -401,9 +442,10 @@
             if (confirm('确定要删除这个文件吗？')) {
                 const index = files.findIndex(f => f.id === fileId);
                 if (index !== -1) {
+                    const deletedFile = files[index];
                     files.splice(index, 1);
                     renderFileList();
-                    alert('文件已删除');
+                    showNotification(`文件 "${deletedFile.name}" 已删除`);
                 }
             }
         }
@@ -414,24 +456,24 @@
             
             // 添加上传区域点击事件
             document.getElementById('upload-area').addEventListener('click', function() {
-                alert('文件上传功能\n\n注意：这是一个静态演示，实际文件上传需要后端支持。');
+                showNotification('文件上传功能\n\n注意：这是一个静态演示，实际文件上传需要后端支持。');
             });
             
             // 添加快捷按钮事件
             document.getElementById('upload-btn').addEventListener('click', function() {
-                alert('上传文件功能');
+                showNotification('上传文件功能');
             });
             
             document.getElementById('create-folder-btn').addEventListener('click', function() {
-                alert('创建文件夹功能');
+                showNotification('创建文件夹功能');
             });
             
             document.getElementById('share-btn').addEventListener('click', function() {
-                alert('分享文件功能');
+                showNotification('分享文件功能');
             });
             
             document.getElementById('settings-btn').addEventListener('click', function() {
-                alert('设置功能');
+                showNotification('设置功能');
             });
         });
     </script>
