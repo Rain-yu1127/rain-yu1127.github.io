@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的个人网盘</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 30px 0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .storage-info {
+            background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .storage-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .storage-used {
+            height: 100%;
+            width: 65%;
+            background: white;
+            border-radius: 5px;
+        }
+
+        .upload-area {
+            border: 2px dashed #6a11cb;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover {
+            background: rgba(106, 17, 203, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #6a11cb;
+            margin-bottom: 10px;
+        }
+
+        .file-list {
+            margin-top: 20px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+        }
+
+        .file-item:hover {
+            background: #f9f9f9;
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+
+        .file-icon.pdf {
+            background: #ff5252;
+            color: white;
+        }
+
+        .file-icon.doc {
+            background: #2196f3;
+            color: white;
+        }
+
+        .file-icon.img {
+            background: #4caf50;
+            color: white;
+        }
+
+        .file-icon.zip {
+            background: #ff9800;
+            color: white;
+        }
+
+        .file-icon.default {
+            background: #9e9e9e;
+            color: white;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .file-meta {
+            font-size: 0.85rem;
+            color: #777;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-download {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .recent-files {
+            margin-top: 30px;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            border-color: #6a11cb;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-icon {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #6a11cb;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #777;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>怜遇网盘</h1>
+            <p>安全存储您的所有文件</p>
+        </header>
+
+        <div class="dashboard">
+            <div class="sidebar">
+                <div class="storage-info">
+                    <h3>存储空间</h3>
+                    <p>已使用 6.5 GB / 10 GB</p>
+                    <div class="storage-bar">
+                        <div class="storage-used"></div>
+                    </div>
+                    <p>剩余 3.5 GB</p>
+                </div>
+
+                <div class="quick-actions">
+                    <div class="action-btn" id="upload-btn">
+                        <div class="action-icon">📤</div>
+                        <div>上传文件</div>
+                    </div>
+                    <div class="action-btn" id="create-folder-btn">
+                        <div class="action-icon">📁</div>
+                        <div>新建文件夹</div>
+                    </div>
+                    <div class="action-btn" id="share-btn">
+                        <div class="action-icon">🔗</div>
+                        <div>分享文件</div>
+                    </div>
+                    <div class="action-btn" id="settings-btn">
+                        <div class="action-icon">⚙️</div>
+                        <div>设置</div>
+                    </div>
+                </div>
+
+                <div class="recent-files">
+                    <h3 class="section-title">最近文件</h3>
+                    <div class="file-item">
+                        <div class="file-icon pdf">📄</div>
+                        <div class="file-info">
+                            <div class="file-name">项目报告.pdf</div>
+                            <div class="file-meta">昨天</div>
+                        </div>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-icon img">🖼️</div>
+                        <div class="file-info">
+                            <div class="file-name">风景照片.jpg</div>
+                            <div class="file-meta">2天前</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <h2 class="section-title">我的文件</h2>
+                
+                <div class="upload-area" id="upload-area">
+                    <div class="upload-icon">📁</div>
+                    <h3>点击或拖拽文件到此处上传</h3>
+                    <p>支持单个或多个文件上传</p>
+                </div>
+
+                <div class="file-list" id="file-list">
+                    <!-- 文件列表将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2025 怜遇网盘 | 备案号：114514
+        </footer>
+    </div>
+
+    <script>
+        // 示例文件数据
+        const files = [
+            { id: 1, name: '项目文档.docx', type: 'doc', size: '2.3 MB', date: '2023-10-15' },
+            { id: 2, name: '财务报表.xlsx', type: 'doc', size: '1.8 MB', date: '2023-10-12' },
+            { id: 3, name: '产品设计图.png', type: 'img', size: '4.5 MB', date: '2023-10-10' },
+            { id: 4, name: '项目备份.zip', type: 'zip', size: '15.2 MB', date: '2023-10-05' },
+            { id: 5, name: '用户手册.pdf', type: 'pdf', size: '3.1 MB', date: '2023-09-28' }
+        ];
+
+        // 渲染文件列表
+        function renderFileList() {
+            const fileListElement = document.getElementById('file-list');
+            
+            if (files.length === 0) {
+                fileListElement.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📁</div>
+                        <h3>暂无文件</h3>
+                        <p>上传您的第一个文件开始使用</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            fileListElement.innerHTML = files.map(file => `
+                <div class="file-item">
+                    <div class="file-icon ${file.type}">
+                        ${file.type === 'pdf' ? '📄' : 
+                          file.type === 'doc' ? '📝' : 
+                          file.type === 'img' ? '🖼️' : 
+                          file.type === 'zip' ? '📦' : '📁'}
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-meta">${file.size} • ${file.date}</div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="btn btn-download" onclick="downloadFile(${file.id})">下载</button>
+                        <button class="btn btn-delete" onclick="deleteFile(${file.id})">删除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 下载文件函数
+        function downloadFile(fileId) {
+            const file = files.find(f => f.id === fileId);
+            alert(`开始下载: ${file.name}\n\n注意：这是一个静态演示，实际功能需要后端支持。`);
+        }
+
+        // 删除文件函数
+        function deleteFile(fileId) {
+            if (confirm('确定要删除这个文件吗？')) {
+                const index = files.findIndex(f => f.id === fileId);
+                if (index !== -1) {
+                    files.splice(index, 1);
+                    renderFileList();
+                    alert('文件已删除');
+                }
+            }
+        }
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            renderFileList();
+            
+            // 添加上传区域点击事件
+            document.getElementById('upload-area').addEventListener('click', function() {
+                alert('文件上传功能\n\n注意：这是一个静态演示，实际文件上传需要后端支持。');
+            });
+            
+            // 添加快捷按钮事件
+            document.getElementById('upload-btn').addEventListener('click', function() {
+                alert('上传文件功能');
+            });
+            
+            document.getElementById('create-folder-btn').addEventListener('click', function() {
+                alert('创建文件夹功能');
+            });
+            
+            document.getElementById('share-btn').addEventListener('click', function() {
+                alert('分享文件功能');
+            });
+            
+            document.getElementById('settings-btn').addEventListener('click', function() {
+                alert('设置功能');
+            });
+        });
+    </script>
+</body>
+</html>
